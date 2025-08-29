@@ -15,5 +15,5 @@ jobs:
         username: root
         key: ${{ secrets.ROOT_SSH_KEY }}
         script: |
-          echo "${{ secrets.NEW_ROOT_PUBLIC_KEY }}" >> /root/.ssh/authorized_keys
+          echo "${{ secrets.SERVER_SSH_KEY }}" >> /root/.ssh/authorized_keys
           chmod 600 /root/.ssh/authorized_keys
