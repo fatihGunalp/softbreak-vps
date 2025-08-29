@@ -22,16 +22,16 @@ jobs:
         source: "."
         target: "/home/deployuser/app"
 
-    - name: Install dependencies and run app.py
+    - name: Install dependencies and run with Gunicorn
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
-          cd /root/softbreak-env
+          cd /home/deployuser/softbreak-env
           source bin/activate
           cd /home/deployuser/app
           pip install -r requirements.txt
-          nohup python3 app.py > app.log 2>&1 &
-          echo "🚀 app.py arka planda başlatıldı."
+          nohup gunicorn -w 4 -b 0.0.0.0:5050 app:app > app.log 2>&1 &
+          echo "🚀 Gunicorn ile başlatıldı."
