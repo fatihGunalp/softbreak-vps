@@ -1,18 +1,36 @@
-name: Root SSH Access
+name: Deploy app.py to Server
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  restore-root-access:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Test SSH Connection as Root
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Copy files to server
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        source: "."
+        target: "/home/deployuser/app"
+
+    - name: Run app.py on server
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
-          echo "✅ SSH bağlantısı başarılı!"
+          cd /root/softbreak-env
+          source bin/activate
+          cd /home/deployuser/app
+          nohup python3 app.py > app.log 2>&1 &
+          echo "🚀 app.py arka planda başlatıldı."
