@@ -1,0 +1,43 @@
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+ENV/
+env/
+softbreak-env/
+
+# VS Code / PyCharm / IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+*.pid
+*.out
+*.err
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Test / coverage
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+
+# Env files & secrets
+.env
+*.env
+
+# Build / dist
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Uvicorn reload artifacts
+*.reload
