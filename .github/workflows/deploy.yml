@@ -1,35 +1,23 @@
-name: Deploy app.py to Server
+name: Restore Root SSH Access
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:  # Elle tetiklenebilir
 
 jobs:
-  deploy:
+  restore-root-access:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Copy files to server
-      uses: appleboy/scp-action@v0.1.4
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SERVER_SSH_KEY }}
-        source: "."
-        target: "/root/softbreak-env/app"
-
-    - name: Run app.py on server
+    - name: Add new SSH key to root authorized_keys
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
-          cd /root/softbreak-env
-          source bin/activate
-          cd app
-          python app.py
+          echo "${{ secrets.NEW_ROOT_PUBLIC_KEY }}" | sudo tee -a /root/.ssh/authorized_keys
+          sudo chmod 600 /root/.ssh/authorized_keys
+          sudo chown root:root /root/.ssh/authorized_keys
