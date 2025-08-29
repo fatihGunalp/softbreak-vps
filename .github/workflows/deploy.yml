@@ -1,20 +1,28 @@
-name: Restore Root SSH Access
+name: Copy SSH Key to Root Without Sudo
 
 on:
-  workflow_dispatch:  # Elle tetikleme
+  workflow_dispatch:
 
 jobs:
-  restore-root-access:
+  copy-key:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Add new SSH key to root authorized_keys
+    - name: Add public key to deployuser
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}  # Örn: deployuser
+        username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
-          echo "${{ secrets.NEW_ROOT_PUBLIC_KEY }}" | sudo tee -a /root/.ssh/authorized_keys
-          sudo chmod 600 /root/.ssh/authorized_keys
-          sudo chown root:root /root/.ssh/authorized_keys
+          echo "${{ secrets.NEW_ROOT_PUBLIC_KEY }}" >> ~/.ssh/authorized_keys
+
+    - name: Try copying to root (without sudo)
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script: |
+          cp ~/.ssh/authorized_keys /tmp/root_key
+          echo "Public key copied to /tmp/root_key"
