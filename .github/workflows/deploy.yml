@@ -22,7 +22,7 @@ jobs:
         source: "."
         target: "/home/deployuser/app"
 
-    - name: Run app.py on server
+    - name: Install dependencies and run app.py
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.SERVER_HOST }}
@@ -32,5 +32,6 @@ jobs:
           cd /root/softbreak-env
           source bin/activate
           cd /home/deployuser/app
+          pip install -r requirements.txt
           nohup python3 app.py > app.log 2>&1 &
           echo "🚀 app.py arka planda başlatıldı."
